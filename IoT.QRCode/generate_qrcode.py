@@ -1,11 +1,14 @@
-'''Genereerd QR code op basis van input parameters'''
-
 import qrcode
 
-class qrcode:
-    '''Class containing all objects of the QR code'''
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4,
+)
 
-    def __init__(self):
-        '''Function to initiaize default variables needed
-        to generate a QR code'''
+qr.add_data('bier')
+qr.make(fit=True)
 
+img = qr.make_image(fill_color="black", back_color="white")
+img.show()

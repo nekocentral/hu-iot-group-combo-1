@@ -3,6 +3,7 @@
 Auteur: Ralph van Leeuwen'''
 
 import sqlite3
+from random import randint
 
 class Parkeren:
     '''Hierin staat alles voor het in en uit gaan van de parkeerplaats
@@ -127,7 +128,7 @@ class Parkeren:
         None'''
 
         # Genereerd ID
-        parkeer_id = id('random')
+        parkeer_id = randint(100000, 1000000)
 
         # Voert query uit en commit deze
         connection = sqlite3.connect(self.database_name)

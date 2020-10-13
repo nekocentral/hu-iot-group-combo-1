@@ -149,7 +149,7 @@ class Parkeren:
         None'''
 
         # Genereerd ID
-        parkeer_id = id('random')
+        parkeer_id = randint(100000, 1000000)
 
         # Voert query uit en commit deze
         connection = sqlite3.connect(self.database_name)

@@ -9,6 +9,8 @@ class Parkeren:
     '''
 
     def __init__(self):
+        '''Zet globale variable waardes'''
+        
         self.totaal_parkeerplaatsen = 20
         self.totaal_voorangparkeerplaatsen = 3
         self.database_name = 'toegangssysteem.db'

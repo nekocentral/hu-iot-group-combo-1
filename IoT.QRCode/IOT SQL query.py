@@ -15,7 +15,8 @@ def create_persoon():
     sql2 = ''' INSERT INTO personen(persoons_id,voornaam,achternaam,parkeren,prioriteit_parkeren,fietsenstalling,ruimte1,ruimte2)
               VALUES(0065442,'Sven','Visser',1,1,1,1,1) '''
     sql3 = ''' INSERT INTO personen(persoons_id,voornaam,achternaam,parkeren,prioriteit_parkeren,fietsenstalling,ruimte1,ruimte2)
-              VALUES(0054885,'Ralph','van Leeuwen',0,0,0,0,0) '''
+              VALUES(0084885,'Ralph','van Leeuwen',0,0,0,0,0) '''
+
     conn.execute(sql1)
     conn.execute(sql2)
     conn.execute(sql3)

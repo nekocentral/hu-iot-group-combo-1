@@ -13,8 +13,6 @@ class Toegang:
         '''Zet globale variable waardes'''
 
         # Standaard waardes zijn False
-        self.authenticated = False
-        self.authorized = False
         self.database_name = 'toegangssysteem.db'
 
     def authenticate(self, tag):

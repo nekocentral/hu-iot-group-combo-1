@@ -13,7 +13,7 @@ class Parkeren:
         '''Zet globale variable waardes'''
 
         # Globale vars
-        self.totaal_parkeerplaatsen = 4
+        self.totaal_parkeerplaatsen = 20
         self.totaal_voorangparkeerplaatsen = 3
         self.database_name = 'toegangssysteem.db'
 
@@ -46,7 +46,7 @@ class Parkeren:
         count(int) -- Aantal in beslag genomen parkeerplaatsen met voorang.'''
 
         connection = sqlite3.connect(self.database_name)
-        counts = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen WHERE voorang == 1''')
+        counts = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen WHERE voorang = 1''')
 
         for count in (counts.fetchall()):
             connection.close()

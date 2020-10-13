@@ -2,6 +2,7 @@ import cv2
 import pyzbar.pyzbar as pyzbar
 
 def get_qrcode(video_index):
+    '''Scans QR code based on index of video'''
     cap = cv2.VideoCapture(video_index)
     font = cv2.FONT_HERSHEY_PLAIN
 

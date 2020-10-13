@@ -1,4 +1,4 @@
 import parkeerplaatsen as p
 
 sven = p.Parkeren()
-print(sven.parkeer(66666, 0))
+print(sven.parkeer(6666, 0))

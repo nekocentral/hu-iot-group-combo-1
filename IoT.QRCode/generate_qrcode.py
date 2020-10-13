@@ -15,3 +15,5 @@ def generate_qrcode(data):
 
     img = qr.make_image(fill_color="black", back_color="white")
     img.show()
+
+generate_qrcode('123456')

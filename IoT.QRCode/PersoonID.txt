@@ -1,0 +1,71 @@
+persoons_id,voornaam,achternaam,parkeren,prioriteit_parkeren
+111076,James,Polk,0,1
+121096,Rutherford,Hayes,0,0
+147245,Herman,Brom,0,1
+149305,Gijs,Schouten,0,0
+175992,George W,Bush,0,0
+185772,William,Harrison,1,1
+192933,Tony,Wheeler,1,0
+197421,Ralph,van Leeuwen,1,1
+199238,Max,Verstappen,0,0
+199457,Martin,van Buuren,0,0
+204996,Millard,Fillmore,0,0
+207905,Andrew,Johnson,0,0
+209201,George,Washinton,1,1
+220200,Paul,Allen,0,0
+223276,Thomas,Wilson,0,0
+239766,Ullysses,Grant,0,0
+256622,Piet,Puk,1,0
+263310,William,Taft,0,0
+280815,Karel,Doorman,0,0
+296861,Barack,Obama,0,0
+300743,Steven,Cleveland,0,0
+339535,David,Cameron,1,0
+341129,Strijk,Bout,0,0
+384251,John,Taylor,1,0
+392800,Abdulah,Adelhavic,0,1
+413219,Willem,van Oranje,0,1
+414305,John,Kennedy,0,0
+427499,Abraham,Lincoln,0,0
+438899,Cornelis,Stuurman,0,1
+461081,Chester,Arthur,0,0
+470289,Herbert,Hoover,0,0
+471397,Bill,Gates,0,1
+487840,John,Adams,1,0
+508992,James,Buchanan,0,0
+508993,Dwight,Eisenhower,0,1
+515876,Warren,Harding,0,0
+525642,John,Coolidge,0,0
+553103,Richard,Nixon,1,0
+555931,Doerak,Visser,1,0
+556893,John Q,Adams,1,0
+560131,Marcel,Haazen,1,1
+589039,Harry,Truman,1,0
+611640,Ronald,Reagan,1,1
+619875,Ruben,van der Weide,0,0
+635703,Michiel,de Ruyter,0,0
+639828,Sven,Visser,1,0
+647759,James,Monroe,1,1
+649130,Franklin,Pierce,0,0
+652383,Qing,Gu,1,0
+670654,Toby,Visser,1,1
+672415,Thomas,Jefferson,0,1
+673252,William,Clinton,0,1
+678757,James,Garfield,0,0
+730637,Andrew,Jackson,0,1
+740513,Lyndon,Johnson,1,1
+744973,William,McKinley,0,0
+745131,George,Bush,1,0
+752302,Theodore,Roosevelt,0,0
+768891,Benjamin,Harrison,0,0
+840390,Franklin,Rooseveld,1,1
+845210,Regald,Ford,0,1
+845896,Donald,Trump,1,1
+854485,Zachary,Taylor,0,0
+857807,Doerak,Vermeulen,0,0
+881011,Steven G,Cleveland,0,0
+897644,Steve,Jobs,0,1
+898095,James,Carter,0,0
+977348,James,Maddison,0,0
+985328,Lonely,Planet,1,1
+987580,Satya,Nadella,1,1

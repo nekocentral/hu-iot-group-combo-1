@@ -12,7 +12,7 @@ class Parkeren:
         '''Zet globale variable waardes'''
 
         # Globale vars
-        self.totaal_parkeerplaatsen = 20
+        self.totaal_parkeerplaatsen = 4
         self.totaal_voorangparkeerplaatsen = 3
         self.database_name = 'toegangssysteem.db'
 
@@ -25,12 +25,14 @@ class Parkeren:
         Returns:
         count(int) -- Aantal in beslag genomen parkeerplaatsen.'''
 
-        
+        # Haalt benodigde waardes op vanuit database
         connection = sqlite3.connect(self.database_name)
-        count = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen''')
-        connection.close()
+        counts = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen''')
 
-        return count
+        # Haalt gewenste data uit waardes
+        for count in (counts.fetchall()):
+            connection.close()
+            return count[0]
 
 
     def tel_voorangparkeerplaatsen(self):
@@ -43,11 +45,11 @@ class Parkeren:
         count(int) -- Aantal in beslag genomen parkeerplaatsen met voorang.'''
 
         connection = sqlite3.connect(self.database_name)
-        count = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen WHERE voorang == 1''')
-        connection.close()
+        counts = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen WHERE voorang == 1''')
 
-        return count
-
+        for count in (counts.fetchall()):
+            connection.close()
+            return count[0]
 
     def get_persoonid(self, tag):
         '''Haalt persoon_id op vanuit de database die weer met andere
@@ -60,11 +62,15 @@ class Parkeren:
         Persoons_id(int) -- ID van het persoon uit de database.
         '''
 
+        # Haalt benodigde waardes op vanuit database
         connection = sqlite3.connect(self.database_name)
-        persoons_id = connection.execute('''SELECT * FROM tags WHERE tag_id == {0}'''.format(str(tag)))
-
-        return persoons_id
-
+        persoons_ids = connection.execute('''SELECT * FROM tags WHERE tag_id == {0}'''.format(str(tag)))
+        
+        # Haalt gewenste data uit waardes
+        for persoons_id in (persoons_ids.fetchall()):
+            connection.close()
+            return persoons_id[3]
+        
     def check_parkeer(self, persoons_id):
         '''Haalt op basis van informatie van tag van QR code of RFID
         de juiste parkeer rechten op
@@ -75,13 +81,17 @@ class Parkeren:
         Returns:
         parkeren(bool) -- True of False of deze persoon in het systeem gevonden is voor parkeren'''
 
+        # Haalt waardes op op basis van persoons_id in database
         connection = sqlite3.connect(self.database_name)
-        result = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
-        connection.close()
+        results = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
 
-        if (result[4] == 1):
-            return True
-        return False
+        # Verwerkt query en returned op basis van of hij mag parkeren of niet.
+        for result in (results.fetchall()):
+            connection.close()
+            if (result[3] == 1):
+                return True
+            return False
+      
 
     def check_voorang(self, persoons_id):
         '''Haalt op basis van informatie van tag van QR code of RFID
@@ -94,11 +104,15 @@ class Parkeren:
         voorang(bool) -- True of False of dit persoon voorang heeft'''
 
         connection = sqlite3.connect(self.database_name)
-        result = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
+        results = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
 
-        if (result[5] == 1):
-            return True
-        return False
+        # Verwerkt query en returned op basis van of hij mag parkeren of niet.
+        for result in (results.fetchall()):
+            connection.close()
+            if (result[4] == 1):
+                return True
+            return False
+
         
     def in_parkeerplaats(self, tag, persoons_id):
         '''Laat je in de parkeerplaats gaan en logt
@@ -153,6 +167,28 @@ class Parkeren:
         connection.commit()
         connection.close()
 
+    def is_geparkeerd(self, tag):
+        '''Aangezien een tag maar een keer mag parkeren controleerd
+        deze functie of de tag al geparkeerd staat
+
+        Args:
+        tag(int) -- Tag van de QR of RFID
+
+        Returns:
+        al_geparkeerd(bool) -- True is wel geparkeerd False is niet geparkeerd
+        result(string) -- Onder welk ID je al geparkeerd bent'''
+
+        connection = sqlite3.connect(self.database_name)
+        results = connection.execute('''SELECT * FROM parkeerplaatsen WHERE tag_id == {0}'''.format(str(tag)))
+
+        # Verwerkt query en returned op basis van of hij mag parkeren of niet.
+        for result in (results.fetchall()):
+            connection.close()
+            return True, str(result[0])
+        connection.close()
+        return False, ''
+    
+
     def parkeer(self, tag, optie):
         '''Hierin wordt besloten of je mag parkeren
 
@@ -172,14 +208,19 @@ class Parkeren:
         parkeer = self.check_parkeer(persoons_id)
         voorang = self.check_voorang(persoons_id)
 
+        # Controleren of deze persoon al geparkeerd staat
+        is_geparkeerd = self.is_geparkeerd(tag)
+        if (is_geparkeerd[0]) and optie:
+            return False, 'U heeft al een parkeerplek onder het ID {0}'.format(is_geparkeerd[1])
+
         # Uitrekenen van andere waardes op basis van vooraf opgehaalde waardes
         normaal_beschikbaar = (self.totaal_parkeerplaatsen - self.totaal_voorangparkeerplaatsen) - parkeerplaatsen
         voorang_beschikbaar = self.totaal_voorangparkeerplaatsen - voorangparkeerplaatsen
         if not optie:
             if parkeer or voorang:
-                out_parkeerplaats(tag)
+                self.out_parkeerplaats(tag)
                 return True, 'U heeft de parkeergarage verlaten.'
-            return False, 'U mag niet parkeren, dus u kant de parkeergarage ook niet verlaten.'
+            return False, 'U mag niet parkeren, dus u kan de parkeergarage ook niet verlaten.'
             
         if not parkeer:
             return False, 'U bent niet toegestaan om te parkeren.'
@@ -190,7 +231,7 @@ class Parkeren:
         elif parkeer and normaal_beschikbaar >= 1:
             self.in_parkeerplaats(tag, persoons_id)
             return True, 'U bent geparkeerd op een reguliere parkeerplaats.'
-        elif not parkeer and voorang and voorang_beschikbaar >= 1:
+        elif parkeer and voorang and voorang_beschikbaar >= 1:
             self.in_voorang_parkeerplaats(tag, persoons_id)
             return True, 'U bent geparkeerd op een voorangsparkeerplaats.'
         return False, 'Er is iets mis gegaan aan de technische kant, heb je de database gesloopt?'

@@ -10,7 +10,8 @@ class Parkeren:
 
     def __init__(self):
         '''Zet globale variable waardes'''
-        
+
+        # Globale vars
         self.totaal_parkeerplaatsen = 20
         self.totaal_voorangparkeerplaatsen = 3
         self.database_name = 'toegangssysteem.db'
@@ -24,6 +25,7 @@ class Parkeren:
         Returns:
         count(int) -- Aantal in beslag genomen parkeerplaatsen.'''
 
+        
         connection = sqlite3.connect(self.database_name)
         count = connection.execute('''SELECT COUNT (*) FROM parkeerplaatsen''')
         connection.close()
@@ -151,8 +153,47 @@ class Parkeren:
         connection.commit()
         connection.close()
 
+    def parkeer(self, tag, optie):
+        '''Hierin wordt besloten of je mag parkeren
 
+        Args:
+        tag(int) -- Tag van de QR of RFID.
+        optie(bool) -- Of je in of uit wilt, True is in False is uit.
 
+        Returns:
+        result(bool) -- Resultaat of het parkeren gelukt is.
+        message(string) -- Bericht van eventuele foutmelding of speciale opmerkingen.
+        '''
+
+        # Waardes nodig binnen deze functie
+        parkeerplaatsen = self.tel_parkeerplaatsen()
+        voorangparkeerplaatsen = self.tel_voorangparkeerplaatsen()
+        persoons_id = self.get_persoonid(tag)
+        parkeer = self.check_parkeer(persoons_id)
+        voorang = self.check_voorang(persoons_id)
+
+        # Uitrekenen van andere waardes op basis van vooraf opgehaalde waardes
+        normaal_beschikbaar = (self.totaal_parkeerplaatsen - self.totaal_voorangparkeerplaatsen) - parkeerplaatsen
+        voorang_beschikbaar = self.totaal_voorangparkeerplaatsen - voorangparkeerplaatsen
+        if not optie:
+            if parkeer or voorang:
+                out_parkeerplaats(tag)
+                return True, 'U heeft de parkeergarage verlaten.'
+            return False, 'U mag niet parkeren, dus u kant de parkeergarage ook niet verlaten.'
+            
+        if not parkeer:
+            return False, 'U bent niet toegestaan om te parkeren.'
+        elif parkeer and not voorang and normaal_beschikbaar <= 0:
+            return False, 'Er zijn geen normale parkeerplekken meer over.'
+        elif parkeer and voorang and voorang_beschikbaar <= 0 and normaal_beschikbaar <=0:
+            return False, 'Er zijn geen normale parkeerplekken of voorangsparkeerplekken meer over'
+        elif parkeer and normaal_beschikbaar >= 1:
+            self.in_parkeerplaats(tag, persoons_id)
+            return True, 'U bent geparkeerd op een reguliere parkeerplaats.'
+        elif not parkeer and voorang and voorang_beschikbaar >= 1:
+            self.in_voorang_parkeerplaats(tag, persoons_id)
+            return True, 'U bent geparkeerd op een voorangsparkeerplaats.'
+        return False, 'Er is iets mis gegaan aan de technische kant, heb je de database gesloopt?'
 
 
 

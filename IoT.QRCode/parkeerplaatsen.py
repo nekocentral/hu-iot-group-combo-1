@@ -195,6 +195,28 @@ class Parkeren:
         connection.close()
         return False, ''
     
+    def check_bestaat(self, tag):
+        '''Aangezien het geen zin heeft verwerkingen te gaan doen van
+        een tag die niet bekend is in het systeem doet deze functie
+        hier een controle op.
+
+        Args:
+        tag(int) -- Tag van de QR of RFID
+
+        Returns:
+        bestaat(bool) -- True of False indien deze wel of niet gevonden is.
+        '''
+
+        connection = sqlite3.connect(self.database_name)
+        results = connection.execute('''SELECT * FROM tags WHERE tag_id == {0}'''.format(str(tag)))
+
+        # Verwerkt query en returned op basis van of hij mag parkeren of niet.
+        for result in (results.fetchall()):
+            connection.close()
+            return True, result
+        connection.close()
+        return False, ''      
+
 
     def parkeer(self, tag, optie):
         '''Hierin wordt besloten of je mag parkeren
@@ -207,6 +229,10 @@ class Parkeren:
         result(bool) -- Resultaat of het parkeren gelukt is.
         message(string) -- Bericht van eventuele foutmelding of speciale opmerkingen.
         '''
+
+        # Vooraf een check of de tag wel bestaat
+        if not (self.check_bestaat(tag))[0]:
+            return False, 'Deze tag staat niet in ons systeem.'
 
         # Waardes nodig binnen deze functie
         parkeerplaatsen = self.tel_parkeerplaatsen()
@@ -242,6 +268,4 @@ class Parkeren:
             self.in_voorang_parkeerplaats(tag, persoons_id)
             return True, 'U bent geparkeerd op een voorangsparkeerplaats.'
         return False, 'Er is iets mis gegaan aan de technische kant, heb je de database gesloopt?'
-
-
 

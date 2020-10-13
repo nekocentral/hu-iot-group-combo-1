@@ -103,6 +103,7 @@ class Parkeren:
         Returns:
         voorang(bool) -- True of False of dit persoon voorang heeft'''
 
+        # Zet database connectie op
         connection = sqlite3.connect(self.database_name)
         results = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
 
@@ -125,8 +126,10 @@ class Parkeren:
         Returns:
         None'''
 
+        # Genereerd ID
         parkeer_id = id('random')
 
+        # Voert query uit en commit deze
         connection = sqlite3.connect(self.database_name)
         connection.execute('''INSERT INTO parkeerplaatsen (parkeer_id,voorang,tag_id,persoons_id)
         VALUES({0}, {1}, {2}, {3});'''.format(parkeer_id, 0, tag, persoons_id))
@@ -144,8 +147,10 @@ class Parkeren:
         Returns:
         None'''
 
+        # Genereerd ID
         parkeer_id = id('random')
 
+        # Voert query uit en commit deze
         connection = sqlite3.connect(self.database_name)
         connection.execute('''INSERT INTO parkeerplaatsen (parkeer_id,voorang,tag_id,persoons_id)
         VALUES({0}, {1}, {2}, {3});'''.format(parkeer_id, 1, tag, persoons_id))
@@ -162,6 +167,7 @@ class Parkeren:
         Returns:
         None'''
 
+        # Voert query uit voor het verwijderen van waarde
         connection = sqlite3.connect(self.database_name)
         connection.execute('''DELETE FROM parkeerplaatsen WHERE tag_id == {0}'''.format(str(tag)))
         connection.commit()
@@ -178,6 +184,7 @@ class Parkeren:
         al_geparkeerd(bool) -- True is wel geparkeerd False is niet geparkeerd
         result(string) -- Onder welk ID je al geparkeerd bent'''
 
+        # Zet database connectie op
         connection = sqlite3.connect(self.database_name)
         results = connection.execute('''SELECT * FROM parkeerplaatsen WHERE tag_id == {0}'''.format(str(tag)))
 

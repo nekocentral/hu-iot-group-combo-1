@@ -1,14 +1,17 @@
 import qrcode
 
-qr = qrcode.QRCode(
-    version=1,
-    error_correction=qrcode.constants.ERROR_CORRECT_L,
-    box_size=10,
-    border=4,
-)
+def generate_qrcode(data):
+    '''Generates QR code based on data given'''
+    
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
 
-qr.add_data('bier')
-qr.make(fit=True)
+    qr.add_data(data)
+    qr.make(fit=True)
 
-img = qr.make_image(fill_color="black", back_color="white")
-img.show()
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.show()

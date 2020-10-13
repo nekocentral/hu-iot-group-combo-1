@@ -257,15 +257,14 @@ class Parkeren:
             
         if not parkeer:
             return False, 'U bent niet toegestaan om te parkeren.'
-        elif parkeer and not voorang and normaal_beschikbaar <= 0:
+        if parkeer and not voorang and normaal_beschikbaar <= 0:
             return False, 'Er zijn geen normale parkeerplekken meer over.'
-        elif parkeer and voorang and voorang_beschikbaar <= 0 and normaal_beschikbaar <=0:
+        if parkeer and voorang and voorang_beschikbaar <= 0 and normaal_beschikbaar <=0:
             return False, 'Er zijn geen normale parkeerplekken of voorangsparkeerplekken meer over'
-        elif parkeer and normaal_beschikbaar >= 1:
+        if parkeer and normaal_beschikbaar >= 1:
             self.in_parkeerplaats(tag, persoons_id)
             return True, 'U bent geparkeerd op een reguliere parkeerplaats.'
-        elif parkeer and voorang and voorang_beschikbaar >= 1:
+        if parkeer and voorang and voorang_beschikbaar >= 1:
             self.in_voorang_parkeerplaats(tag, persoons_id)
             return True, 'U bent geparkeerd op een voorangsparkeerplaats.'
         return False, 'Er is iets mis gegaan aan de technische kant, heb je de database gesloopt?'
-

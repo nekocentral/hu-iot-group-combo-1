@@ -52,12 +52,25 @@ class Parkeren:
         tag(int) -- Tag van de QR of RFID
         
         Returns:
-        mag_parkeren(bool) -- True of False of deze persoon in het systeem gevonden is voor parkeren'''
+        parkeren(bool) -- True of False of deze persoon in het systeem gevonden is voor parkeren'''
 
         connection = sqlite3.connect(self.database_name)
         persoons_id = connection.execute('''SELECT * FROM tags WHERE tag_id == {0}'''.format(str(tag)))
         result = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
 
+    def check_voorang(self, tag):
+        '''Haalt op basis van informatie van tag van QR code of RFID
+        code de rechten op of deze persoon voorang heeft.
+        
+        Args:
+        tag(int) -- Tag van de QR of RFID
+        
+        Returns:
+        voorang(bool) -- True of False of dit persoon voorang heeft'''
+
+        connection = sqlite3.connect(self.database_name)
+        persoons_id = connection.execute('''SELECT * FROM tags WHERE tag_id == {0}'''.format(str(tag)))
+        result = connection.execute('''SELECT * FROM personen WHERE persoons_id == {0}'''.format(str(persoons_id)))
         
 
 

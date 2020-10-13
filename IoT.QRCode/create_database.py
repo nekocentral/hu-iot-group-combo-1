@@ -10,11 +10,11 @@ c.execute('''CREATE TABLE IF NOT EXISTS personen (
    persoons_id INTEGER PRIMARY KEY,
    voornaam TEXT,
    achternaam TEXT,
-   parkeren TEXT,
-   prioriteit_parkeren TEXT,
-   fietsenstalling TEXT,
-   ruimte1 TEXT,
-   ruimte2 TEXT
+   parkeren INTEGER,
+   prioriteit_parkeren INTEGER,
+   fietsenstalling INTEGER,
+   ruimte1 INTEGER,
+   ruimte2 INTEGER
 );''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS tags (
@@ -35,5 +35,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS parkeerplaatsen (
     FOREIGN KEY (persoons_id)
         REFERENCES personen (persoons_ID)
 );''')
+
 c.commit()
+
+
+
 c.close()

@@ -2,3 +2,6 @@ sqlite3
 pyzbar
 opencv-python
 pylint
+qrcode
+opencv-python
+pyzbar

@@ -55,10 +55,13 @@ c.execute('''CREATE TABLE IF NOT EXISTS toegang (
 
 c.execute('''CREATE TABLE IF NOT EXISTS log (
     logline INTEGER PRIMARY KEY,
+    tag_id INTEGER,
     persoons_id INTEGER,
     ruimte_id INTEGER,
     toegang_id INTEGER,
     logregel TEXT,
+    FOREIGN KEY (tag_id)
+        REFERENCES tags (tag_id),
     FOREIGN KEY (persoons_id)
         REFERENCES ruimtes (persoons_id),
     FOREIGN KEY (ruimte_id)

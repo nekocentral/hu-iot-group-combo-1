@@ -10,6 +10,10 @@ pip install -r requirements.txt
 
 De modules inclusief versies die in requirements al genoemd zijn staan hieronder.
 ```
+sqlite3
+pyzbar
+opencv-python
+pylint
 
 ```
 
@@ -29,16 +33,5 @@ https://www.pylint.org/
 
 Automatisch testen van correcte docstring conventie is mogelijk met de tool pep257.
 https://pep257.readthedocs.io/
-
-### PEP257 testing
-Input:
-```
-python -m pep257 __init__.py --count
-```
-### Pylint testing
-Input:
-```
-python -m pylint __init__.py
-```
 
 

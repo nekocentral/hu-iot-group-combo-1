@@ -1,3 +1,5 @@
+# TODO: Dit in een klasse schrijven.
+
 import qrcode
 
 def generate_qrcode(data):

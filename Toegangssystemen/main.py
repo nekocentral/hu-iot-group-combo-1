@@ -8,4 +8,4 @@ import qr as q
 #print(ralph.vraag_toegang(6666, 1))
 
 ralph = q.qr()
-ralph.generate_qrcode('test')
+ralph.new_qr_user('Ralph', 'van Leeuwen', 'info@anvion.nl')

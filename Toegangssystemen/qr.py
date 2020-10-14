@@ -11,7 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
-
+import os
 
 class qr:
     '''Classe die alle functies voor QR code acties bevat.
@@ -36,14 +36,16 @@ class qr:
         self.mail_username = ''
         self.mail_password = ''
 
-    def generate_qrcode(self, data):
+    def generate_qrcode(self):
         '''Genereerd QR code op basis van meegegeven data
         en slaat deze op als een bestand.
         
-        data(str) -- Data to give to the QR code.
+        Args:
+        None
         
         Returns:
-        file--name -- Naam waar het bestand als opgeslagen wordt.
+        tag_id(int) -- ID die gegenereerd is en op de QR-waarde staat.
+        file_name(str) -- Naam van het bestand dat weggeschreven is.
         '''
         
         # Formaat van de QR code.
@@ -54,16 +56,18 @@ class qr:
             border=1,
         )
 
+        tag_id = randint(100000, 100000000)
+
         # Toevoegen van data aan de geformateerde QR code.
-        qr.add_data(data)
+        qr.add_data(tag_id)
         qr.make(fit=True)
 
         # QR code omzetten naar een image.
-        file_name = str(data) + '.png'
+        file_name = str(tag_id) + '.png'
         img = qr.make_image(fill_color="black", back_color="white")
         img.save(file_name)
 
-        return file_name
+        return tag_id, file_name
 
     def scan_qrcode(self):
         '''Scans QR code based on index of video. Let op
@@ -96,7 +100,7 @@ class qr:
         achternaam(str) -- Achternaam die in de database onder persoon komt te staan.
 
         Returns:
-        persoons_id(int) -- Random gegenereerde ID van persoon'''
+        persoons_id(int) -- Random gegenereerde ID'''
 
         # Maakt verbinding met de SQL database
         connection = sqlite3.connect('toegangssysteem.db')
@@ -109,13 +113,13 @@ class qr:
               VALUES({0}, '{1}', '{2}', {3}, {4})'''.format(str(persoons_id), voornaam, achternaam, str(1), str(0)))
         connection.commit()
 
+        return persoons_id
+
         # Voeg tag toe aan database
         connection.execute('''INSERT INTO tags(tag_id,is_qr,is_rfid,persoons_id)VALUES({0}, {1}, {2}, {3})'''.format(str(data), str(1), str(0), str(persoons_id)))
         connection.commit()
         connection.close()
-        # Voeg toegangscontrole toe aan database
-        
-        return persoons_id
+               
 
     def qr_access(self, persoons_id):
         '''Deze functie is apart zodat je niet gelijk alles sloopt
@@ -142,6 +146,8 @@ class qr:
         deze QR code kan gebruikt worden om toegang
         te krijgen tot een de parkeerruimte'''
 
+
+        pass
         # Initial message setup
         message = MIMEMultipart("alternative")
         message["Subject"] = 'Uw QR code staat klaar.'
@@ -165,6 +171,7 @@ class qr:
         content = open(file_name, 'rb')
         image = MIMEImage(content.read())
         content.close()
+        os.remove(file_name)
 
         # Referentie van image linken.
         image.add_header('Content-ID', '<Mailtrapimage>')
@@ -175,3 +182,32 @@ class qr:
             server.login(self.mail_username, self.mail_password)
             server.sendmail(self.mail_sender, recipient, message.as_string())
 
+    def new_qr_user(self, voornaam, achternaam, recipient):
+        '''Spreekt omliggende functies aan voor een nieuwe gebruiker met QR
+        code te generern via de volgende stappen:
+        1. Genereren van QR code. generate_qrcode()
+        2. Registreren van QR code waarbij de persoon
+        wordt aangemaakt. register_qrcode()
+        3. Toevoegen van standaard toegang voor qr_code. qr_access()
+        4. Versturen van de QR code via de mail. send_qrcode()
+
+        Args:
+        voornaam(str) -- Voornaam van gebruiker.
+        achternaam(str) -- Achternaam van gebruiker.
+        recipient(str) -- e-mail adress van gebruiker waar de.
+        QR code ook uiteindelijk naartoe wordt gestuurd.
+
+        Returns:
+        resultaat(bool) -- True of False, Of alles goed is gegaan.
+        persoons_id(int) -- uniek ID van persoon
+        '''
+
+        # Main uitvoering
+        try:
+            tag_id, file_name = self.generate_qrcode()
+            persoons_id = self.register_qrcode(tag_id, voornaam, achternaam)
+            self.qr_access(persoons_id)
+            self.send_qrcode(file_name, recipient)
+            return True, persoons_id
+        except:
+            return False, '' # Als er fouten optreden wordt deze uitgevoerd.

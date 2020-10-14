@@ -6,6 +6,12 @@ import cv2
 import pyzbar.pyzbar as pyzbar
 from random import randint
 import sqlite3
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from PIL import Image
+
 
 class qr:
     '''Classe die alle functies voor QR code acties bevat.
@@ -19,30 +25,45 @@ class qr:
         Returns:
         None'''
 
+        # Variablen voor de camera configuratie
         self.database_name = 'toegangssysteem.db'
         self.cameraindex = 3
 
+        # Variablen voor de mail configuratie
+        self.smtp_server = ''
+        self.smtp_port = 0
+        self.mail_sender = ''
+        self.mail_username = ''
+        self.mail_password = ''
+
     def generate_qrcode(self, data):
-        '''Generates QR code based on data given
+        '''Genereerd QR code op basis van meegegeven data
+        en slaat deze op als een bestand.
         
-        data(str) -- Data to give to the QR code
+        data(str) -- Data to give to the QR code.
         
         Returns:
-        None
+        file--name -- Naam waar het bestand als opgeslagen wordt.
         '''
         
+        # Formaat van de QR code.
         qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            version=5,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
             box_size=10,
-            border=4,
+            border=1,
         )
 
+        # Toevoegen van data aan de geformateerde QR code.
         qr.add_data(data)
         qr.make(fit=True)
 
+        # QR code omzetten naar een image.
+        file_name = str(data) + '.png'
         img = qr.make_image(fill_color="black", back_color="white")
-        img.show()
+        img.save(file_name)
+
+        return file_name
 
     def scan_qrcode(self):
         '''Scans QR code based on index of video. Let op
@@ -75,7 +96,7 @@ class qr:
         achternaam(str) -- Achternaam die in de database onder persoon komt te staan.
 
         Returns:
-        None'''
+        persoons_id(int) -- Random gegenereerde ID van persoon'''
 
         # Maakt verbinding met de SQL database
         connection = sqlite3.connect('toegangssysteem.db')
@@ -93,7 +114,8 @@ class qr:
         connection.commit()
         connection.close()
         # Voeg toegangscontrole toe aan database
-        self.qr_access(persoons_id)
+        
+        return persoons_id
 
     def qr_access(self, persoons_id):
         '''Deze functie is apart zodat je niet gelijk alles sloopt
@@ -115,10 +137,41 @@ class qr:
         connection.commit()
         connection.close()
 
-    def send_qrcode(self, qr_code, reciever):
+    def send_qrcode(self, file_name, recipient):
         '''Stuurt een mail met een QR code hierin
         deze QR code kan gebruikt worden om toegang
         te krijgen tot een de parkeerruimte'''
 
-        pass
+        # Initial message setup
+        message = MIMEMultipart("alternative")
+        message["Subject"] = 'Uw QR code staat klaar.'
+        message["From"] = self.mail_sender
+        message["To"] = recipient
+
+        # Afbeelding deel in html verwerkt.
+        html = """\
+        <html>
+            <body>
+                <img src="cid:Mailtrapimage">
+            </body>
+        </html>
+        """
+
+        # Het html deel attachen aan het mailbericht
+        part = MIMEText(html, "html")
+        message.attach(part)
+
+        # Bestand binnen halen van de schrijf af van de daadwerkelijke afbeelding.
+        content = open(file_name, 'rb')
+        image = MIMEImage(content.read())
+        content.close()
+
+        # Referentie van image linken.
+        image.add_header('Content-ID', '<Mailtrapimage>')
+        message.attach(image)
+
+        # Het daadwerkelijk versturen van het mail bericht.
+        with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+            server.login(self.mail_username, self.mail_password)
+            server.sendmail(self.mail_sender, recipient, message.as_string())
 

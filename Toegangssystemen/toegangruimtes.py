@@ -140,4 +140,28 @@ class Toegang:
         results = connection.execute('''SELECT * FROM LOGGING''')
         for result in results.fetchall():
             print (result)
+
+    def get_ruimtes(self):
+        '''Returned alle ruimtes die bekend zijn
+        in de database
+
+        Args:
+        None
+
+        Returns:
+        ruimte(tuple) -- Aanwezige ruimtes.
+        '''
+
+        connection = sqlite3.connect(self.database_name)
+        ruimtes = connection.execute('''SELECT * FROM ruimtes''')
+
+        ruimte = []
+
+        for entry in (ruimtes.fetchall()):
+            ruimte.append(entry)
+
+        connection.close()
+
+        return ruimte
+               
         

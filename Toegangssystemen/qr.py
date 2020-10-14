@@ -26,7 +26,7 @@ class qr:
 
         # Variablen voor de camera configuratie
         self.database_name = 'toegangssysteem.db'
-        self.cameraindex = 2
+        self.cameraindex = 0
 
         # Variablen voor de mail configuratie
         self.smtp_server = 'smtp.office365.com'
@@ -68,7 +68,7 @@ class qr:
 
         return tag_id, file_name
 
-    def scan_qrcode(self):
+    def scan_qrcode(self, ret_value, found_event):
         '''Scans QR code based on index of video. Let op
         deze functie blijft door draaien tot er een QR-code
         is gevonden.
@@ -79,14 +79,16 @@ class qr:
         Returns:
         data(str) -- The reciever data'''
 
-        cap = cv2.VideoCapture(self.cameraindex)
+        cap = cv2.VideoCapture(self.cameraindex, cv2.CAP_DSHOW)
 
         while True:
             _, frame = cap.read()
 
             decodedObjects = pyzbar.decode(frame)
             for obj in decodedObjects:
-                return obj.data
+                ret_value.value = int(obj.data)
+                found_event.set()
+                return ret_value
 
 
 

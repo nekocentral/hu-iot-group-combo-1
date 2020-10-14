@@ -1,7 +1,6 @@
-sqlite3
-pyzbar
-opencv-python
-pylint
-qrcode
-opencv-python
-pyzbar
+pyzbar=0.1.8
+opencv-python=4.4.0.44
+pylint=2.5.2
+qrcode=6.1
+opencv-python=4.4.0.44
+VideoCapture=0.9.5

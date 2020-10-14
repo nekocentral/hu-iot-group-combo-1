@@ -8,9 +8,7 @@ from random import randint
 import sqlite3
 import smtplib
 from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from PIL import Image
 import os
 import base64
 
@@ -114,13 +112,12 @@ class qr:
               VALUES({0}, '{1}', '{2}', {3}, {4})'''.format(str(persoons_id), voornaam, achternaam, str(1), str(0)))
         connection.commit()
 
-        return persoons_id
-
         # Voeg tag toe aan database
         connection.execute('''INSERT INTO tags(tag_id,is_qr,is_rfid,persoons_id)VALUES({0}, {1}, {2}, {3})'''.format(str(data), str(1), str(0), str(persoons_id)))
         connection.commit()
         connection.close()
                
+        return persoons_id
 
     def qr_access(self, persoons_id):
         '''Deze functie is apart zodat je niet gelijk alles sloopt

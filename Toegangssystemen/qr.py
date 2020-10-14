@@ -12,6 +12,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
 import os
+import base64
 
 class qr:
     '''Classe die alle functies voor QR code acties bevat.
@@ -27,13 +28,13 @@ class qr:
 
         # Variablen voor de camera configuratie
         self.database_name = 'toegangssysteem.db'
-        self.cameraindex = 3
+        self.cameraindex = 2
 
         # Variablen voor de mail configuratie
-        self.smtp_server = ''
-        self.smtp_port = 0
-        self.mail_sender = ''
-        self.mail_username = ''
+        self.smtp_server = 'smtp.office365.com'
+        self.smtp_port = 587
+        self.mail_sender = 'ralph.vanleeuwen@student.hu.nl'
+        self.mail_username = 'ralph.vanleeuwen@student.hu.nl'
         self.mail_password = ''
 
     def generate_qrcode(self):
@@ -78,10 +79,9 @@ class qr:
         None
         
         Returns:
-        None'''
+        data(str) -- The reciever data'''
 
         cap = cv2.VideoCapture(self.cameraindex)
-        font = cv2.FONT_HERSHEY_PLAIN
 
         while True:
             _, frame = cap.read()
@@ -89,6 +89,7 @@ class qr:
             decodedObjects = pyzbar.decode(frame)
             for obj in decodedObjects:
                 return obj.data
+
 
 
     def register_qrcode(self, data, voornaam, achternaam):
@@ -137,7 +138,7 @@ class qr:
         connection.execute('''INSERT INTO toegang(toegang_id, persoons_id, ruimte_id, heeft_toegang) VALUES ({0}, {1}, {2}, {3})'''.format(str(randint(100000, 1000000)), str(persoons_id), str(2), str(0)))
         connection.execute('''INSERT INTO toegang(toegang_id, persoons_id, ruimte_id, heeft_toegang) VALUES ({0}, {1}, {2}, {3})'''.format(str(randint(100000, 1000000)), str(persoons_id), str(3), str(0)))
         connection.execute('''INSERT INTO toegang(toegang_id, persoons_id, ruimte_id, heeft_toegang) VALUES ({0}, {1}, {2}, {3})'''.format(str(randint(100000, 1000000)), str(persoons_id), str(4), str(0)))
-        connection.execute('''INSERT INTO toegang(toegang_id, persoons_id, ruimte_id, heeft_toegang) VALUES ({0}, {1}, {2}, {3})'''.format(str(randint(100000, 1000000)), str(persoons_id), str(5), str(0)))
+        connection.execute('''INSERT INTO toegang(toegang_id, persoons_id, ruimte_id, heeft_toegang) VALUES ({0}, {1}, {2}, {3})'''.format(str(randint(100000, 1000000)), str(persoons_id), str(5), str(1)))
         connection.commit()
         connection.close()
 
@@ -146,41 +147,39 @@ class qr:
         deze QR code kan gebruikt worden om toegang
         te krijgen tot een de parkeerruimte'''
 
-
-        pass
         # Initial message setup
         message = MIMEMultipart("alternative")
         message["Subject"] = 'Uw QR code staat klaar.'
         message["From"] = self.mail_sender
         message["To"] = recipient
 
+        encoded = base64.b64encode(open(file_name, "rb").read()).decode()
+
         # Afbeelding deel in html verwerkt.
-        html = """\
-        <html>
+        html = f"""\
+            <html>
             <body>
-                <img src="cid:Mailtrapimage">
+            <p> Geachte Meneer / Mevrouw,</p>
+            <p></p>
+            <p> Uw QR code staat klaar voor uw gezoek aan BMC</p>
+            <p> Hiermee heeft u toegang om te parkeren </p>
+            <img src="data:image/jpg;base64,{encoded}">
             </body>
-        </html>
-        """
+            </html>
+            """
 
         # Het html deel attachen aan het mailbericht
         part = MIMEText(html, "html")
         message.attach(part)
 
-        # Bestand binnen halen van de schrijf af van de daadwerkelijke afbeelding.
-        content = open(file_name, 'rb')
-        image = MIMEImage(content.read())
-        content.close()
-        os.remove(file_name)
-
-        # Referentie van image linken.
-        image.add_header('Content-ID', '<Mailtrapimage>')
-        message.attach(image)
-
         # Het daadwerkelijk versturen van het mail bericht.
         with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+            server.ehlo()
+            server.starttls()
             server.login(self.mail_username, self.mail_password)
             server.sendmail(self.mail_sender, recipient, message.as_string())
+            server.quit()
+            os.remove(file_name)
 
     def new_qr_user(self, voornaam, achternaam, recipient):
         '''Spreekt omliggende functies aan voor een nieuwe gebruiker met QR
@@ -203,11 +202,10 @@ class qr:
         '''
 
         # Main uitvoering
-        try:
-            tag_id, file_name = self.generate_qrcode()
-            persoons_id = self.register_qrcode(tag_id, voornaam, achternaam)
-            self.qr_access(persoons_id)
-            self.send_qrcode(file_name, recipient)
-            return True, persoons_id
-        except:
-            return False, '' # Als er fouten optreden wordt deze uitgevoerd.
+        
+        tag_id, file_name = self.generate_qrcode()
+        persoons_id = self.register_qrcode(tag_id, voornaam, achternaam)
+        self.qr_access(persoons_id)
+        self.send_qrcode(file_name, recipient)
+        return True, persoons_id
+        

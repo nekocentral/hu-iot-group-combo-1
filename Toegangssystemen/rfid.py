@@ -19,7 +19,7 @@ class rfid:
 
         self.database_name = 'toegangssysteem.db'
 
-    def read_card(self):
+    def read_card(self, ret_value, found_event):
         '''Leest de RFID kaart uit en geeft de input terug.
 
         Args:
@@ -31,4 +31,7 @@ class rfid:
 
         reader = SimpleMFRC522()
         tag, text = reader.read()
-        return tag, text
+
+        ret_value.value = int(text)
+        found_event.set()
+        return ret_value

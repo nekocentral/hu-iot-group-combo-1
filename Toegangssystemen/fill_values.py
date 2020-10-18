@@ -5,7 +5,7 @@ fill_database.new_ruimte(1, 'Fietsenstalling')
 fill_database.new_ruimte(2, 'Server ruimte')
 fill_database.new_ruimte(3, 'Medischeinen hok')
 fill_database.new_ruimte(4, 'Kroeg')
-fill_database.new_ruimte(5, 'Slaapkamer')
+fill_database.new_ruimte(5, 'Openbare ruimte')
 
 # Deze doen per persoon
 persoons_id = fill_database.new_person('Ralph', 'van Leeuwen', 1, 1)

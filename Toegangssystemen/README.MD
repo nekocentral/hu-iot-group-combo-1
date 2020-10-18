@@ -10,11 +10,12 @@ pip install -r requirements.txt
 
 De modules inclusief versies die in requirements al genoemd zijn staan hieronder.
 ```
-sqlite3
-pyzbar
-opencv-python
-pylint
-
+pyzbar=0.1.8
+opencv-python=4.4.0.44
+pylint=2.5.2
+qrcode=6.1
+opencv-python=4.4.0.44
+VideoCapture=0.9.5
 ```
 
 #### Testing

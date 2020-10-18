@@ -1,8 +1,7 @@
 '''Dit bestand bevat de classe van de QR code
 acties en dingen'''
 
-import qrcode
-import cv2
+import acapture
 import pyzbar.pyzbar as pyzbar
 from random import randint
 import sqlite3
@@ -11,6 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 import base64
+import qrcode
 
 class qr:
     '''Classe die alle functies voor QR code acties bevat.
@@ -79,11 +79,11 @@ class qr:
         Returns:
         data(str) -- The reciever data'''
 
-        cap = cv2.VideoCapture(self.cameraindex, cv2.CAP_DSHOW)
+        cap = acapture.open(0)
+
 
         while True:
-            _, frame = cap.read()
-
+            check,frame = cap.read() # non-blocking
             decodedObjects = pyzbar.decode(frame)
             for obj in decodedObjects:
                 ret_value.value = int(obj.data)

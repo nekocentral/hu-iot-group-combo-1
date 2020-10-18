@@ -1,3 +1,5 @@
+# gejat van https://www.sigmdel.ca/michel/ha/rpi/temp_sensor_en.html
+
 #!/usr/bin/python
 import sys
 import Adafruit_DHT

@@ -79,7 +79,7 @@ class qr:
         Returns:
         data(str) -- The reciever data'''
 
-        cap = cv2.VideoCapture(self.cameraindex, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(self.cameraindex)
 
         while True:
             _, frame = cap.read()

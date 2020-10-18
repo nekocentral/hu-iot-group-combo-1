@@ -1,14 +1,14 @@
 import parkeerplaatsen as p
 import toegangruimtes as t
 import qr as q
-#import rfid as rf
+import rfid as rf
 import multiprocessing
 import time
 
 parkeer = p.Parkeren()
 toegang = t.Toegang()
 qr_code = q.qr()
-#rfid = rf.rfid()
+rfid = rf.rfid()
 
 def test2(ret_value, found_event):
     time.sleep(10)
@@ -37,12 +37,12 @@ def main():
     p1 = multiprocessing.Process(target=qr_code.scan_qrcode, args=[ret_value1, found_event])
     p1.start()
 
-    #p2 = multiprocessing.Process(target=rfid.read_card, args=[ret_value2, found_event])
-    #p2.start()
+    p2 = multiprocessing.Process(target=rfid.read_card, args=[ret_value2, found_event])
+    p2.start()
    
     found_event.wait()
     p1.terminate()
-    #p2.terminate()
+    p2.terminate()
 
     return (ret_value1.value + ret_value2.value)
 

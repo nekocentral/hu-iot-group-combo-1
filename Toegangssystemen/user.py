@@ -13,9 +13,9 @@ rfid = rf.rfid()
 
 def mqtt_setup():
     client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport=”tcp”)
-    client= mqtt.Client(client_name)
-    connect(ul.haazen.xyz, port=1883, keepalive=60, bind_address="")
-    client.connect(host_name)
+    client= mqtt.Client("c0001")
+    connect(ul1.haazen.xyz, port=1883, keepalive=60, bind_address="")
+    client.connect(ul1.haazen.xyz)
 
     return client
 

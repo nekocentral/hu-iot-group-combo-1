@@ -1,6 +1,7 @@
 import parkeerplaatsen as p
 import toegangruimtes as t
 import qr as q
+import json
 import rfid as rf
 import multiprocessing
 import time
@@ -11,13 +12,6 @@ toegang = t.Toegang()
 qr_code = q.qr()
 rfid = rf.rfid()
 
-def mqtt_setup():
-    client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport=”tcp”)
-    client= mqtt.Client("c0001")
-    connect(ul1.haazen.xyz, port=1883, keepalive=60, bind_address="")
-    client.connect(ul1.haazen.xyz)
-
-    return client
 
 def main():
     '''Functie die aangeroepen wordt om de QR
@@ -50,7 +44,7 @@ def main():
 
 
 
-def user_menu(client):
+def user_menu():
     while True:
         print('Welkom tot het toegangsmenu!\n \n')
         antwoord = str(input('Wilt u parkeren? (ja of nee): '))
@@ -67,16 +61,25 @@ def user_menu(client):
             result = (parkeer.parkeer(main(), direction))
             
             if result[0]:
-                client.publish("domoticz/in", "idx" : 3, "nvalue" : 1)
+                client = mqtt.Client()
+                client.connect("ul1.haazen.xyz",1883,60)
+                publish_data = {"idx" : 3, "nvalue" : 1}
+                client.publish("domoticz/in", json.dumps(publish_data))
                 print(result[1])
                 time.sleep(5)
-                client.publish("domoticz/in", "idx" : 3, "nvalue" : 0)
+                publish_data = {"idx" : 3, "nvalue" : 0}
+                client.publish("domoticz/in", json.dumps(publish_data))
+                client.disconnect()
                 continue
-            client.publish("domoticz/in", "idx" : 2, "nvalue" : 1)
+            client = mqtt.Client()
+            client.connect("ul1.haazen.xyz",1883,60)
+            publish_data = {"idx" : 2, "nvalue" : 1}
+            client.publish("domoticz/in", json.dumps(publish_data))
             print(result[1])
             time.sleep(5)
-            client.publish("domoticz/in", "idx" : 2, "nvalue" : 0)
-            continue
+            publish_data = {"idx" : 2, "nvalue" : 0}
+            client.publish("domoticz/in", json.dumps(publish_data))
+            client.disconnect()
             
         elif (antwoord.lower()) != 'nee':
             print('Uw antwoord is niet valide.')
@@ -96,22 +99,29 @@ def user_menu(client):
             else:
                 result = toegang.vraag_toegang(main(), ruimte)
                 if result:
-                    client.publish("domoticz/in", "idx" : 3, "nvalue" : 1)
-                    print("U heeft toegang."
+                    client = mqtt.Client()
+                    client.connect("ul1.haazen.xyz",1883,60)
+                    publish_data = {"idx" : 3, "nvalue" : 1}
+                    client.publish("domoticz/in", json.dumps(publish_data))
+                    print("U heeft toegang.")
                     time.sleep(5)
-                    client.publish("domoticz/in", "idx" : 3, "nvalue" : 0)
+                    publish_data = {"idx" : 3, "nvalue" : 0}
+                    client.publish("domoticz/in", json.dumps(publish_data))
+                    client.disconnect()
                     continue
-                client.publish("domoticz/in", "idx" : 2, "nvalue" : 1)
-                print("U heeft geen toegang"
+                client = mqtt.Client()
+                client.connect("ul1.haazen.xyz",1883,60)
+                publish_data = {"idx" : 2, "nvalue" : 1}
+                client.publish("domoticz/in", json.dumps(publish_data))
+                print("U heeft geen toegang.")
                 time.sleep(5)
-                client.publish("domoticz/in", "idx" : 2, "nvalue" : 0)
+                publish_data = {"idx" : 2, "nvalue" : 0}
+                client.publish("domoticz/in", json.dumps(publish_data))
+                client.disconnect()
                 continue
         elif (antwoord.lower()) != 'nee':
             print('Uw antwoord is niet valide.')
             continue
 
 if __name__ == '__main__':
-
-    client = mqtt_setup()
-    user_menu(client)
-    
+    user_menu()

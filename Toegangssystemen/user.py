@@ -14,7 +14,7 @@ rfid = rf.rfid()
 def mqtt_setup():
     client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport=”tcp”)
     client= mqtt.Client(client_name)
-    connect(host, port=1883, keepalive=60, bind_address="")
+    connect(ul.haazen.xyz, port=1883, keepalive=60, bind_address="")
     client.connect(host_name)
 
     return client
@@ -67,15 +67,15 @@ def user_menu(client):
             result = (parkeer.parkeer(main(), direction))
             
             if result[0]:
-                client.publish("sensor/green_light","ON")
+                client.publish("domoticz/in", "idx" : 3, "nvalue" : 1)
                 print(result[1])
                 time.sleep(5)
-                client.publish("sensor/green_light","OFF")
+                client.publish("domoticz/in", "idx" : 3, "nvalue" : 0)
                 continue
-            client.publish("sensor/red_light","ON")
+            client.publish("domoticz/in", "idx" : 2, "nvalue" : 1)
             print(result[1])
             time.sleep(5)
-            client.publish("sensor/red_light","OFF")
+            client.publish("domoticz/in", "idx" : 2, "nvalue" : 0)
             continue
             
         elif (antwoord.lower()) != 'nee':
@@ -96,15 +96,15 @@ def user_menu(client):
             else:
                 result = toegang.vraag_toegang(main(), ruimte)
                 if result:
-                    client.publish("sensor/green_light","ON")
+                    client.publish("domoticz/in", "idx" : 3, "nvalue" : 1)
                     print("U heeft toegang."
                     time.sleep(5)
-                    client.publish("sensor/green_light","OFF")
+                    client.publish("domoticz/in", "idx" : 3, "nvalue" : 0)
                     continue
-                client.publish("sensor/red_light","ON")
+                client.publish("domoticz/in", "idx" : 2, "nvalue" : 1)
                 print("U heeft geen toegang"
                 time.sleep(5)
-                client.publish("sensor/red_light","OFF")
+                client.publish("domoticz/in", "idx" : 2, "nvalue" : 0)
                 continue
         elif (antwoord.lower()) != 'nee':
             print('Uw antwoord is niet valide.')

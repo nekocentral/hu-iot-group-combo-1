@@ -4,3 +4,4 @@ pylint=2.5.2
 qrcode=6.1
 opencv-python=4.4.0.44
 VideoCapture=0.9.5
+paho-mqtt
